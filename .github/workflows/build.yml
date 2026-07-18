@@ -5,7 +5,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout project files
+      uses: actions/checkout@v4
+      with:
+        path: main-project
+
+    - name: Checkout Android Template
+      uses: actions/checkout@v4
+      with:
+        repository: 'vimalcvs/Android-WebView-App-Template'
+        path: template
 
     - name: set up JDK 17
       uses: actions/setup-java@v4
@@ -13,14 +22,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Download Stable Zip
+    - name: Inject HTML into Template
       run: |
-        curl -L -o template.zip https://github.com/vimalcvs/Android-WebView-App-Template/archive/refs/heads/main.zip
-        unzip template.zip
-        DIR_NAME=$(ls -d */ | grep Android-WebView)
-        mv "$DIR_NAME" template
         rm -rf template/app/src/main/assets/*
-        cp -r * template/app/src/main/assets/ || true
+        cp -r main-project/* template/app/src/main/assets/ || true
+        rm -rf template/app/src/main/assets/template
+        rm -rf template/app/src/main/assets/main-project
 
     - name: Build APK with Gradle
       run: |
