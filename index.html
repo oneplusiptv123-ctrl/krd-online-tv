@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneStore TV</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&family=Changa:wght@400;700&family=El+Messiri:wght@400;600&family=Noto+Kufi+Arabic:wght@300;400;700&family=Readex+Pro:wght@300;400;700&family=Tajawal:wght@300;400;700&family=Vazirmatn:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* هاوردەکردنی فۆنتە فەرمییەکان */
+        @import url('https://fonts.cdnfonts.com/css/rudaw');
+        @import url('https://fonts.cdnfonts.com/css/kurdistan24');
+        @import url('https://fonts.cdnfonts.com/css/speda');
+        @import url('https://fonts.cdnfonts.com/css/nrt');
+        @import url('https://fonts.cdnfonts.com/css/kurdistan');
+        @import url('https://fonts.cdnfonts.com/css/deda');
+        @import url('https://fonts.cdnfonts.com/css/kurdish-slim');
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.css" type="text/css"/>
+    <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js"></script>
+
+    <style>
+        :root {
+            --body-bg: #12141c;
+            --card-bg: #1e222d;
+            --card-hover-border: var(--accent);
+            --accent: #ff2a5f;
+            --admin-gold: #d4af37;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --font-main: 'Vazirmatn', sans-serif;
+            --panel-bg: #161922;
+            --input-bg: #222735;
+            --border-color: #2d3345;
+            
+            /* ستایلی ژێرنووس */
+            --sub-font: 'Vazirmatn', sans-serif;
+            --sub-size-mobile: 18px;
+            --sub-size-desktop: 28px;
+            --sub-offset-mobile: 10%;
+            --sub-offset-desktop: 8%;
+            --sub-color: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-main); }
+        
+        body { 
+            background-color: var(--body-bg); 
+            color: var(--text-main); 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background 0.4s ease, background-color 0.4s ease;
+        }
+
+        .ads-slider-container { 
+            width: 100%; 
+            height: 110px; 
+            background: #181b24; 
+            position: relative; 
+            overflow: hidden; 
+            border-bottom: 2px solid var(--accent); 
+            flex-shrink: 0; 
+            transition: border-color 0.4s ease;
+        }
+        .slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease-in-out; display: flex; justify-content: center; align-items: center; }
+        .slide.active { opacity: 1; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        .slide-text { font-size: 16px; font-weight: 900; text-align: center; padding: 10px; }
+
+        header { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            padding: 10px; 
+            background: rgba(18, 20, 28, 0.95); 
+            backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        .header-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .header-actions { display: flex; gap: 6px; align-items: center; }
+        .back-main-btn { background: #222735; color: var(--text-main); border: 1px solid #2d3345; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .back-main-btn:hover { background: var(--accent); border-color: var(--accent); }
+        
+        .lang-select { background: #222735; color: var(--text-main); border: 1px solid #2d3345; padding: 4px 6px; border-radius: 6px; font-size: 11px; cursor: pointer; outline: none; }
+        .tv-clock { font-size: 11px; font-weight: 500; background: var(--card-bg); padding: 4px 10px; border-radius: 12px; border: 1px solid #2d3345; color: var(--text-muted); cursor: pointer; }
+
+        .search-nav-block { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+        .search-row { display: flex; gap: 6px; width: 100%; }
+        .tv-search { flex: 1; padding: 8px 15px; border-radius: 8px; background: var(--card-bg); color: #fff; font-size: 13px; outline: none; border: 1px solid #2d3345; text-align: right; }
+        
+        .category-toggle-btn { 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            padding: 8px 12px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 13px; 
+            font-weight: bold; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+            transition: background 0.4s ease;
+        }
+        
+        .category-dropdown-list { display: none; gap: 6px; width: 100%; background: #161922; padding: 6px; border-radius: 8px; border: 1px solid #2d3345; }
+        .category-dropdown-list.show { display: flex; }
+        .dropdown-item-btn { flex: 1; background: #1e222d; color: var(--text-main); border: 1px solid #2d3345; padding: 8px 4px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; text-align: center; }
+        .dropdown-item-btn.active { background: linear-gradient(135deg, var(--accent), #12141c); border-color: var(--accent); }
+
+        .landscape-category-buttons {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            width: 100%;
+        }
+        .landscape-tab-btn {
+            background: #1e222d;
+            color: var(--text-main);
+            border: 1px solid #2d3345;
+            padding: 6px 4px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .landscape-tab-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .live-genres-bar { display: none; justify-content: flex-start; gap: 6px; width: 100%; overflow-x: auto; padding: 2px 0; }
+        .live-genres-bar::-webkit-scrollbar { height: 0px; }
+        .genre-tag-btn { background: #1e222d; color: var(--text-muted); border: 1px solid #2d3345; padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .genre-tag-btn.active, .genre-tag-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        /* بەشی ڤیدیۆ */
+        .video-wrapper { width: 100%; max-width: 600px; margin: 0 auto; padding: 5px 10px 0 10px; display: none; flex-shrink: 0; }
+        .player-container { width: 100%; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; border: 2px solid #2d3345; background: #000; position: relative; }
+        
+        #clapprVid, #clapprVid [data-player], .native-player, .iframe-player { width: 100% !important; height: 100% !important; border: none; }
+
+        video::cue {
+            background: transparent !important; 
+            color: var(--sub-color) !important;
+            font-family: var(--sub-font) !important; 
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0px 3px 6px rgba(0,0,0,1) !important;
+        }
+        
+        @media (max-width: 991px) {
+            video::cue { font-size: var(--sub-size-mobile) !important; }
+            video::-webkit-media-text-track-display { transform: translateY(calc(var(--sub-offset-mobile) * -1)) !important; }
+        }
+        @media (min-width: 992px) {
+            video::cue { font-size: var(--sub-size-desktop) !important; }
+            video::-webkit-media-text-track-display { transform: translateY(calc(var(--sub-offset-desktop) * -1)) !important; }
+        }
+
+        .player-switcher { display: flex; justify-content: center; gap: 4px; margin-top: 6px; background: rgba(30, 35, 48, 0.4); padding: 4px; border-radius: 8px; flex-wrap: wrap; }
+        .switch-btn { background: #1c1f2b; color: var(--text-muted); border: 1px solid #2e3446; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; flex: 1; text-align: center; min-width: 70px; }
+        .switch-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        
+        .back-playback-btn { background: var(--accent) !important; color: white !important; border-color: var(--accent) !important; transition: filter 0.2s ease; }
+        .back-playback-btn:hover { filter: brightness(1.1); }
+        
+        .btn-fullscreen-toggle { background: #10b981 !important; color: white !important; border-color: #10b981 !important; }
+        .btn-list-toggle { background: #3b82f6 !important; color: white !important; border-color: #3b82f6 !important; }
+
+        #mainTvContainer {
+            flex: 1;
+            overflow-y: auto;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 1400px; margin: 0 auto; }
+        .showcase-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; cursor: pointer; transition: all 0.3s; position: relative; aspect-ratio: 2/3; border: 1px solid rgba(255, 255, 255, 0.01); }
+        .showcase-card:hover { border-color: var(--card-hover-border); }
+        .showcase-card img { width: 100%; height: 100%; object-fit: cover; }
+        .card-meta { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(18,20,28,1), transparent); padding: 10px 5px; text-align: center; }
+        .card-title { font-size: 13px; font-weight: 700; }
+
+        .live-channels-container { display: flex; flex-direction: column; gap: 8px; max-width: 800px; margin: 0 auto; }
+        .live-channel-row-card { display: flex; align-items: center; justify-content: space-between; background: #1b1e29; border-radius: 10px; padding: 8px 12px; cursor: pointer; border: 1px solid #262b3a; }
+        .live-channel-row-card:focus, .live-channel-row-card:hover { border-color: var(--card-hover-border); background: #222736; }
+        .live-channel-left-content { display: flex; align-items: center; gap: 12px; }
+        .live-channel-logo-wrapper { width: 40px; height: 40px; border-radius: 6px; overflow: hidden; background: #0f1118; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+        .live-channel-logo-wrapper img { width: 100%; height: 100%; object-fit: contain; }
+        .live-channel-row-title { font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .live-channel-tv-indicator { font-size: 10px; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 10px; }
+
+        /* پانێڵی ئەدمین */
+        .management-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--panel-bg); padding: 20px; border-radius: 15px; box-shadow: 0 0 60px rgba(0,0,0,0.95); z-index: 999; width: 95%; max-width: 500px; border: 2px solid var(--admin-gold); max-height: 85vh; overflow-y: auto; color: #fff; }
+        .management-modal h3 { color: var(--admin-gold); text-align: center; font-size: 18px; margin-bottom: 12px; }
+        .input-label { font-size: 12px; color: var(--text-muted); margin: 8px 0 4px 0; }
+        .management-modal input, .management-modal select { width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 6px; border: 1px solid #2d3345; background: var(--input-bg); color: #fff; text-align: right; font-size: 13px; }
+        .action-submit { width: 100%; padding: 10px; background: var(--admin-gold); border: none; color: #000; border-radius: 6px; font-weight: 900; cursor: pointer; font-size: 13px; }
+        
+        .matte-color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; margin-top: 5px; }
+        .matte-color-btn { height: 40px; border-radius: 8px; border: 2px solid rgba(255, 255, 255, 0.1); cursor: pointer; transition: transform 0.2s, border-color 0.2s; position: relative; }
+        .matte-color-btn:hover { transform: scale(1.05); }
+        .matte-color-btn.active { border-color: #ffffff !important; box-shadow: 0 0 10px rgba(255, 255, 255, 0.4); }
+        
+        .item-list-manager { background: #11131a; border-radius: 8px; padding: 10px; max-height: 250px; overflow-y: auto; border: 1px solid #2d3345; }
+        .manager-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #1c2030; margin-bottom: 8px; border-radius: 8px; border: 1px solid #2d3345; transition: border-color 0.2s; }
+        .manager-row:hover { border-color: var(--admin-gold); }
+        
+        .manager-left-actions { display: flex; gap: 6px; }
+        .manager-left-actions button { padding: 6px 12px; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .edit-btn { background: #eab308; color: #000; }
+        .del-btn { background: #ef4444; color: #fff; }
+
+        .manager-center-info { flex-grow: 1; margin-right: 12px; text-align: right; display: flex; flex-direction: column; }
+        .manager-title { font-size: 13px; font-weight: bold; color: var(--text-main); }
+        .manager-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        .manager-right-arrows { display: flex; flex-direction: column; gap: 4px; }
+        .arrow-btn { background: #232736; border: 1px solid #2d3345; color: var(--admin-gold); border-radius: 4px; width: 30px; height: 26px; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.2s; }
+        .arrow-btn:hover { background: var(--admin-gold); color: #000; }
+
+        .exit-modal { text-align: center; margin-top: 15px; cursor: pointer; color: #f43f5e; font-size: 13px; font-weight: bold; }
+
+        @media (max-width: 991px) {
+            .player-switcher { padding: 2px; gap: 2px; border-radius: 6px; }
+            .switch-btn { padding: 4px 6px; font-size: 10px; border-radius: 4px; min-width: auto; }
+            .back-playback-btn { flex: 0 0 auto; width: auto; padding: 4px 8px; }
+        }
+
+        /* لاربونەوەی مۆبایل */
+        @media (orientation: landscape) and (max-height: 500px) {
+            body { 
+                flex-direction: row-reverse !important; 
+                height: 100vh !important; 
+                overflow: hidden !important; 
+            }
+            .ads-slider-container { display: none !important; }
+            
+            header { 
+                display: flex !important; 
+                flex-direction: row !important;
+                flex-wrap: wrap !important;
+                width: 100% !important;
+                max-width: none !important;
+                height: auto !important; 
+                border-left: none !important; 
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+                padding: 4px !important;
+                gap: 4px !important;
+                background: #11131a !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+            }
+
+            header.hidden-sidebar {
+                display: none !important; 
+            }
+            
+            .header-top {
+                display: flex !important;
+                flex-direction: row !important;
+                width: auto !important;
+                gap: 4px !important;
+                align-items: center !important;
+            }
+            
+            .header-actions {
+                display: flex !important;
+                gap: 4px !important;
+                align-items: center !important;
+            }
+
+            .back-main-btn {
+                padding: 4px 6px !important;
+                font-size: 10px !important;
+                height: 26px !important;
+            }
+
+            .lang-select {
+                padding: 2px 4px !important;
+                font-size: 10px !important;
+                height: 26px !important;
+            }
+
+            .tv-clock {
+                font-size: 10px !important;
+                padding: 4px 6px !important;
+                border-radius: 6px !important;
+                height: 26px !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+
+            .search-nav-block {
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 4px !important;
+                width: auto !important;
+                align-items: center !important;
+            }
+            
+            .search-row {
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 4px !important;
+                width: auto !important;
+                align-items: center !important;
+            }
+
+            .category-toggle-btn {
+                display: flex !important;
+                font-size: 10px !important;
+                padding: 4px 8px !important;
+                border-radius: 6px !important;
+                height: 26px !important;
+                white-space: nowrap !important;
+                align-items: center !important;
+            }
+
+            .category-dropdown-list {
+                position: absolute !important;
+                top: 34px !important;
+                right: 4px !important;
+                width: 140px !important;
+                z-index: 9999 !important;
+            }
+
+            .tv-search {
+                width: 100px !important;
+                height: 26px !important;
+                font-size: 10px !important;
+                padding: 0 6px !important;
+                border-radius: 6px !important;
+            }
+
+            .landscape-category-buttons {
+                display: none !important; 
+            }
+
+            .live-genres-bar {
+                display: none !important;
+            }
+
+            #mainTvContainer { 
+                flex: 0 0 42% !important; 
+                max-width: 320px !important;
+                height: 100% !important; 
+                overflow-y: auto !important; 
+                padding: 4px !important; 
+                display: flex !important;
+                flex-direction: column !important; 
+                gap: 4px !important;
+                border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
+            }
+
+            #mainTvContainer.hidden-sidebar {
+                display: none !important; 
+            }
+
+            header {
+                width: 100% !important;
+                flex-direction: column !important; 
+                gap: 4px !important;
+                padding: 4px 0 !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            }
+
+            .header-top, .search-nav-block {
+                width: 100% !important;
+                justify-content: space-between !important;
+            }
+
+            .tv-search {
+                flex: 1 !important;
+                width: auto !important;
+            }
+            
+            .video-wrapper { 
+                display: block !important; 
+                flex: 1 !important; 
+                max-width: none !important; 
+                padding: 4px !important; 
+                margin: 0 !important; 
+                height: 100% !important; 
+            }
+            
+            .player-container { 
+                height: calc(100% - 28px) !important; 
+                aspect-ratio: auto !important; 
+            }
+            
+            .player-switcher { 
+                margin-top: 2px !important; 
+                padding: 1px !important;
+                gap: 1px !important;
+            }
+            
+            .switch-btn {
+                font-size: 8px !important;
+                padding: 1px 3px !important;
+            }
+            
+            .live-channels-container { 
+                display: flex !important; 
+                flex-direction: column !important; 
+                gap: 4px !important; 
+                flex: 1 !important;
+                overflow-y: auto !important;
+            }
+            
+            .grid-container { 
+                display: grid !important; 
+                grid-template-columns: repeat(2, 1fr) !important; 
+                gap: 8px !important; 
+                flex: 1 !important;
+                overflow-y: auto !important;
+                padding: 4px 0 !important;
+            }
+            
+            .showcase-card { 
+                aspect-ratio: 2/3 !important; 
+                height: 140px !important; 
+                display: block !important; 
+                position: relative !important;
+                border-radius: 6px !important;
+                overflow: hidden !important;
+            }
+            
+            .showcase-card img { 
+                width: 100% !important; 
+                height: 100% !important; 
+                border-radius: 6px !important; 
+                object-fit: cover !important; 
+            }
+            
+            .card-meta { 
+                position: absolute !important; 
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                background: linear-gradient(to top, rgba(0,0,0,0.9), transparent) !important; 
+                padding: 6px 4px !important; 
+                text-align: center !important; 
+            }
+            
+            .card-title {
+                font-size: 9px !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                color: #fff !important;
+                font-weight: bold !important;
+            }
+        }
+
+        @media (min-width: 992px) {
+            body { overflow: auto; height: auto; }
+            .tv-layout-active { display: flex !important; flex-direction: row-reverse !important; max-width: 1500px; margin: 20px auto; gap: 20px; padding: 0 20px; height: 75vh; }
+            .tv-layout-active .video-wrapper { flex: 2; display: block !important; margin: 0 !important; padding: 0 !important; max-width: none !important; overflow-y: auto; }
+            .tv-layout-active .grid-container, .tv-layout-active .live-channels-container { flex: 1; max-height: 100%; overflow-y: auto; display: flex !important; flex-direction: column !important; gap: 10px !important; }
+            .tv-layout-active .showcase-card { aspect-ratio: auto; height: 80px; display: flex; flex-direction: row-reverse; align-items: center; justify-content: space-between; padding: 10px; }
+            .tv-layout-active .showcase-card img { width: 60px; height: 60px; border-radius: 6px; }
+            .tv-layout-active .card-meta { position: static; background: none; padding: 0; text-align: right; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ads-slider-container" id="adSlider"></div>
+
+    <div class="video-wrapper" id="videoWrapper">
+        <div class="player-container" id="playerContainer"></div>
+        <div class="player-switcher" id="switcherPanel">
+            <button class="switch-btn back-playback-btn" onclick="stopVideoAndReturn()">⬅️ گەڕانەوە</button>
+            
+            <button class="switch-btn btn-fullscreen-toggle" onclick="toggleFullscreen()">🖥️ شاشەی پڕ</button>
+            <button class="switch-btn btn-list-toggle" id="btnToggleSidebar" onclick="toggleSidebarList()">📋 لیست</button>
+
+            <button class="switch-btn active" id="btn-clappr" onclick="switchPlayer('clappr')">Play 1</button>
+            <button class="switch-btn" id="btn-fluid" onclick="switchPlayer('fluid')">Play 2</button>
+            <button class="switch-btn" id="btn-native" onclick="switchPlayer('native')">Play 3</button>
+            <button class="switch-btn" id="btn-iframe" onclick="switchPlayer('iframe')">Play Web</button>
+        </div>
+    </div>
+
+    <div id="mainTvContainer">
+        <header id="appHeader">
+            <div class="header-top">
+                <div class="header-actions">
+                    <button class="back-main-btn" id="homeBtn" onclick="filterCategory('film')">🏠 سەرەکی</button>
+                    <select class="lang-select" id="langSelector" onchange="changeLanguage(this.value)">
+                        <option value="ku">Kurdî</option>
+                        <option value="ar">العربية</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <div id="tvClock" class="tv-clock" onclick="triggerAdminAccess()">00:00:00</div>
+            </div>
+            
+            <div class="search-nav-block">
+                <div class="landscape-category-buttons">
+                    <button class="landscape-tab-btn" id="land-live-btn" onclick="filterCategory('live')">📺 کەناڵەکان (Live)</button>
+                    <button class="landscape-tab-btn active" id="land-movies-btn" onclick="filterCategory('film')">🎬 فیلمەکان (Movies)</button>
+                </div>
+
+                <div class="search-row">
+                    <button class="category-toggle-btn" id="categoryToggleBtn" onclick="toggleCategoryDropdown()">لیستی بەشەکان ☰</button>
+                    <input type="text" id="tvSearch" class="tv-search" placeholder="گەڕان...">
+                </div>
+                
+                <div class="category-dropdown-list" id="categoryDropdown">
+                    <button class="dropdown-item-btn" id="tab-live" onclick="selectCategoryDropdown('live')">Live Store</button>
+                    <button class="dropdown-item-btn" id="tab-series" onclick="selectCategoryDropdown('series')">Series Store</button>
+                    <button class="dropdown-item-btn" id="tab-film" onclick="selectCategoryDropdown('film')">Film Store</button>
+                </div>
+            </div>
+
+            <div class="live-genres-bar" id="liveGenresBar">
+                <button class="genre-tag-btn active" id="genre-all" onclick="filterLiveGenre('all')">گشتی</button>
+                <button class="genre-tag-btn" id="genre-kurd" onclick="filterLiveGenre('kurd tv')">Kurd TV</button>
+                <button class="genre-tag-btn" id="genre-sport" onclick="filterLiveGenre('sport')">Sport</button>
+                <button class="genre-tag-btn" id="genre-quran" onclick="filterLiveGenre('quran')">Quran</button>
+                <button class="genre-tag-btn" id="genre-news" onclick="filterLiveGenre('news')">News</button>
+                <button class="genre-tag-btn" id="genre-kids" onclick="filterLiveGenre('kids')">Kids</button>
+                <button class="genre-tag-btn" id="genre-arabic" onclick="filterLiveGenre('arabic')">Arabic</button>
+                <button class="genre-tag-btn" id="genre-family" onclick="filterLiveGenre('family')">Family</button>
+            </div>
+        </header>
+
+        <main id="moviesGrid" class="grid-container"></main>
+    </div>
+
+    <!-- پانێڵی ئەدمین -->
+    <div class="management-modal" id="adminModal">
+        <h3 id="adminTitle">سەنتەری کۆنتڕۆڵی گشتگیر</h3>
+        <div id="mainAdminFields">
+            <div class="input-label" id="labelAdminPass">🔐 پاسۆردی ئەدمین:</div>
+            <input type="text" id="passInput" placeholder="پاسۆردی نوێ">
+            <button class="action-submit" id="btnUpdatePass" style="background: #475569; color: white; margin-bottom:10px;" onclick="updateServerPass()">نوێکردنەوەی پاسۆرد</button>
+
+            <div style="border: 1px solid var(--admin-gold); padding: 12px; border-radius: 8px; margin-bottom: 12px; background: rgba(0,0,0,0.2);">
+                <div style="color: var(--admin-gold); font-weight: bold; font-size: 13px; margin-bottom: 6px;" id="labelAppTheme">🎨 گۆڕینی ڕەنگی پاشبنەمای ئەپەکە (مات):</div>
+                <div class="matte-color-grid">
+                    <button class="matte-color-btn" style="background-color: #12141c;" data-color="#12141c" onclick="selectAppMatteColor('#12141c', this)" title="تۆخی سەرەتایی"></button>
+                    <button class="matte-color-btn" style="background-color: #1a2238;" data-color="#1a2238" onclick="selectAppMatteColor('#1a2238', this)" title="شینی مات"></button>
+                    <button class="matte-color-btn" style="background-color: #2d142c;" data-color="#2d142c" onclick="selectAppMatteColor('#2d142c', this)" title="مۆری مات"></button>
+                    <button class="matte-color-btn" style="background-color: #0f2027;" data-color="#0f2027" onclick="selectAppMatteColor('#0f2027', this)" title="سەوزی مات"></button>
+                    <button class="matte-color-btn" style="background-color: #1c1d21;" data-color="#1c1d21" onclick="selectAppMatteColor('#1c1d21', this)" title="خۆڵەمێشی مات"></button>
+                    <button class="matte-color-btn" style="background-color: #1b2a47;" data-color="#1b2a47" onclick="selectAppMatteColor('#1b2a47', this)" title="کۆباڵتی مات"></button>
+                </div>
+            </div>
+
+            <div style="border: 1px solid #475569; padding: 10px; border-radius: 8px; margin-bottom: 12px; background: rgba(0,0,0,0.2);">
+                <div style="color: var(--text-main); font-weight: bold; font-size: 13px; margin-bottom: 6px;" id="labelSubSettings">⚙️ ڕێکخستنی فەرمی ژێرنووس بۆ بینەران:</div>
+                
+                <div class="input-label" id="labelSubFont">هەڵبژاردنی فۆنت:</div>
+                <select id="subFontSelect">
+                    <!-- فۆنتە نوێ و ناوازە داواکراوەکان لێرە جێگیر کراون -->
+                    <option value="'Rudaw', sans-serif">فۆنتی ڕووداو (Rudaw)</option>
+                    <option value="'Kurdistan24', sans-serif">فۆنتی کوردستان٢٤ (K24)</option>
+                    <option value="'Speda', sans-serif">فۆنتی سپێدە (Speda)</option>
+                    <option value="'NRT', sans-serif">فۆنتی ئێن ئاڕ تی (NRT)</option>
+                    <option value="'Cairo', sans-serif">کایرۆ (Cairo)</option>
+                    <option value="'Tajawal', sans-serif">تەجاوەل (Tajawal)</option>
+                    <option value="'Readex Pro', sans-serif">ریدێکس پرۆ (Readex Pro)</option>
+                    <option value="'El Messiri', sans-serif">ئێل مێسیری (El Messiri)</option>
+                    <option value="'Deda', sans-serif">فۆنتی دایكا (Deda)</option>
+                    <option value="'Kurdish Slim', sans-serif">کوردی باریک (Slim)</option>
+                    <option value="'Vazirmatn', sans-serif">ڤەزیر (Vazirmatn)</option>
+                </select>
+                
+                <div class="input-label" id="labelSubColor">ڕەنگی نووسین:</div>
+                <select id="subColorSelect">
+                    <option value="#ffffff">سپى</option>
+                    <option value="#ffe082">زەردی کاڵ</option>
+                    <option value="#ffd54f">زەردی تۆخ</option>
+                    <option value="#a5d6a7">سەوزی کاڵ</option>
+                    <option value="#90caf9">شینی ئاسمانی</option>
+                </select>
+                
+                <div class="input-label" id="labelSubSize">قەبارەی فۆنت لە مۆبایل (px):</div>
+                <input type="range" id="sliderSize" min="12" max="35" value="18">
+                
+                <div class="input-label" id="labelSubOffset">بەرزی و نزمی لە شاشە (%):</div>
+                <input type="range" id="sliderOffset" min="0" max="60" value="10">
+                
+                <button class="action-submit" id="btnSaveSubStyle" style="background: #10b981; color: white; margin-top:5px;" onclick="saveSubConfigToServer()">پاشەکەوتکردنی ستایلی ژێرنووس</button>
+            </div>
+
+            <div class="input-label" id="labelAds">📢 ڕیکلامەکان:</div>
+            <input type="text" id="ad1" placeholder="وێنەی ١"><input type="text" id="ad2" placeholder="وێنەی ٢">
+            <input type="text" id="ad3" placeholder="وێنەی ٣"><input type="text" id="ad4" placeholder="وێنەی ٤">
+            <input type="text" id="ad5" placeholder="وێنەی ٥">
+            <input type="number" id="adDurationInput" value="5">
+            <button class="action-submit" id="btnUpdateSlider" style="background: #2563eb; color: white;" onclick="saveAdsToServer()">نوێکردنەوەی سلایدەر</button>
+        </div>
+        
+        <div class="input-label" id="formActionLabel" style="margin-top: 15px; border-top: 1px solid #2d3345; padding-top: 10px;">🎬 زیادکردنی مێدیا:</div>
+        <input type="text" id="titleInput" placeholder="ناوی مێدیا">
+        <input type="text" id="posterInput" placeholder="لینکی پۆستەر">
+        <input type="text" id="streamInput" placeholder="لینکی لایڤ یان ڤیدیۆ">
+        <input type="text" id="subtitleInput" placeholder="لینکی ژێرنووس (.vtt / .srt)">
+        <select id="categoryInput" onchange="toggleGenreInput()">
+            <option value="film">Film Store</option>
+            <option value="series">Series Store</option>
+            <option value="live">Live Store</option>
+        </select>
+        
+        <div id="liveGenreSelectWrapper" style="display: none;">
+            <select id="liveGenreInput">
+                <option value="all">گشتی</option>
+                <option value="kurd tv">Kurd TV</option>
+                <option value="sport">Sport</option>
+                <option value="quran">Quran</option>
+                <option value="news">News</option>
+                <option value="kids">Kids</option>
+                <option value="arabic">Arabic</option>
+                <option value="family">Family</option>
+            </select>
+        </div>
+
+        <button class="action-submit" id="submitFormBtn" onclick="insertMovieToServer()">پاشەکەوتکردن</button>
+        <button class="action-submit" id="cancelEditBtn" style="background: #64748b; margin-top: 5px; display: none;" onclick="resetFormToInsert()">پاشگەزبوونەوە</button>
+        
+        <div class="input-label" id="labelDragAndDrop" style="margin-top: 15px; color: var(--admin-gold);">↕️ ڕاکێشان و ڕیزبەندکردنی کەناڵەکان:</div>
+        <div id="managerListWrapper">
+            <div class="item-list-manager" id="managerList" style="margin-top:10px;"></div>
+        </div>
+        <div class="exit-modal" id="btnExitModal" onclick="closeAdminModal()">❌ داخستنی پانێڵ</div>
+    </div>
+
+    <script>
+        const API_KEY = "$2a$10$9G0InWLy7r4YcZOO3fL/TeRWeVP9PL6wuCecCNte4uvB4xhy8qrKa";
+        const SERVER_BIN = "6a3e98deda38895dfe034a6d";
+        const API_ENDPOINT = `https://api.jsonbin.io/v3/b/${SERVER_BIN}`;
+
+        let database = { password: "12345", ad: "||||5", movies: [], appBg: "#12141c", subConfig: { font: "'Vazirmatn', sans-serif", sizeMobile: "18px", sizeDesktop: "28px", offsetMobile: "10%", offsetDesktop: "8%", color: "#ffffff" } };
+        let currentVideoUrl = ""; let currentSubUrl = ""; let currentPlayerType = "clappr"; let selectedCategory = "film"; let selectedLiveGenre = "all";
+        let fluidInstance = null; let clapprInstance = null; let editingIndex = null; let slideInterval = null;
+        let counter = 0; let timer;
+        let currentLang = "ku";
+
+        const themeAccents = {
+            "#12141c": "#ff2a5f",
+            "#1a2238": "#3b82f6",
+            "#2d142c": "#c084fc",
+            "#0f2027": "#10b981",
+            "#1c1d21": "#94a3b8",
+            "#1b2a47": "#60a5fa"
+        };
+
+        const translations = {
+            ku: {
+                home: "🏠 سەرەکی",
+                categoryToggle: "لیستی بەشەکان ☰",
+                searchPlaceholder: "گەڕان...",
+                liveGenreAll: "",
+                adminTitle: "سەنتەری کۆنتڕۆڵی گشتگیر",
+                adminPass: "🔐 پاسۆردی ئەدمین:",
+                updatePass: "نوێکردنەوەی پاسۆرد",
+                subSettings: "⚙️ ڕێکخستنی فەرمی ژێرنووس بۆ بینەران:",
+                subFont: "هەڵبژاردنی فۆنت:",
+                subColor: "ڕەنگی نووسین:",
+                subSize: "قەبارەی فۆنت لە مۆبایل (px):",
+                subOffset: "بەرزی و نزمی لە شاشە (%):",
+                saveSubStyle: "ستایلی ژێرنووس پاشەکەوت بکە",
+                ads: "📢 ڕیکلامەکان:",
+                updateSlider: "نوێکردنەوەی سلایدەر",
+                addMedia: "🎬 زیادکردنی مێدیا:",
+                dragAndDrop: "↕️ ڕاکێشان و ڕیزبەندکردنی کەناڵەکان:",
+                exitModal: "❌ داخستنی پانێڵ",
+                saveBtn: "پاشەکەوتکردن",
+                cancelBtn: "پاشگەزبوونەوە",
+                updateBtn: "نوێکردنەوە",
+                noMedia: "هیچ مێدیایەک نییە",
+                titleInput: "ناوی مێدیا",
+                posterInput: "لینکی پۆستەر",
+                streamInput: "لینکی لایڤ یان ڤیدیۆ",
+                subtitleInput: "لینکی ژێرنووس (.vtt / .srt)",
+                adminPrompt: "کۆدی ئەدمین بنووسە:",
+                btnFullscreen: "🖥️ شاشەی پڕ",
+                btnList: ""
+            },
+            ar: {
+                home: "🏠 الرئيسية",
+                categoryToggle: "قائمة الأقسام ☰",
+                searchPlaceholder: "بحث...",
+                liveGenreAll: "الكل",
+                adminTitle: "مركز التحكم الشامل",
+                adminPass: "🔐 كلمة مرور المسؤول:",
+                updatePass: "تحديث كلمة المرور",
+                subSettings: "⚙️ إعدادات الترجمة الرسمية للمشاهدين:",
+                subFont: "اختر الخط:",
+                subColor: "لون النص:",
+                subSize: "حجم الخط للهاتف (px):",
+                subOffset: "موقع النص من الشاشة (%):",
+                saveSubStyle: "حفظ نمط الترجمة",
+                ads: "📢 الإعلانات:",
+                updateSlider: "تحديث السلايدر",
+                addMedia: "🎬 إضافة ميديا:",
+                dragAndDrop: "↕️ سحب وإعادة ترتيب القنوات:",
+                exitModal: "❌ إلاق لوحة التحكم",
+                saveBtn: "حفظ",
+                cancelBtn: "إلغاء",
+                updateBtn: "تحديث",
+                noMedia: "لا يوجد محتوى متوفر",
+                titleInput: "اسم الميديا",
+                posterInput: "رابط البوستر",
+                streamInput: "رابط البث أو الفيديو",
+                subtitleInput: "رابط الترجمة (.vtt / .srt)",
+                adminPrompt: "أدخل رمز المسؤول:",
+                btnFullscreen: "🖥️ ملء الشاشة",
+                btnList: "📋 القائمة"
+            },
+            en: {
+                home: "🏠 Home",
+                categoryToggle: "Category List ☰",
+                searchPlaceholder: "Search...",
+                liveGenreAll: "All",
+                adminTitle: "Global Admin Panel",
+                adminPass: "🔐 Admin Password:",
+                updatePass: "Update Password",
+                subSettings: "⚙️ Official Subtitle Styles for Viewers:",
+                subFont: "Select Font:",
+                subColor: "Text Color:",
+                subSize: "Font Size Mobile (px):",
+                subOffset: "Screen Vertical Position (%):",
+                saveSubStyle: "Save Subtitle Style",
+                ads: "📢 Advertisements:",
+                updateSlider: "Update Slider",
+                addMedia: "🎬 Add Media:",
+                dragAndDrop: "↕️ Drag & Drop to Reorder Channels:",
+                exitModal: "❌ Close Panel",
+                saveBtn: "Save",
+                cancelBtn: "Cancel",
+                updateBtn: "Update",
+                noMedia: "No Media Available",
+                titleInput: "Media Name",
+                posterInput: "Poster URL",
+                streamInput: "Live or Video URL",
+                subtitleInput: "Subtitle URL (.vtt / .srt)",
+                adminPrompt: "Enter Admin Password:",
+                btnFullscreen: "🖥️ Fullscreen",
+                btnList: "📋 List"
+            }
+        };
+
+        // 👑 چاککردنی کیبۆرد و لادانی کێشەی داخستنی مۆداڵ لە کاتی سڕینەوەدا 👑
+        window.addEventListener('keydown', function(event) {
+            const activeEl = document.activeElement;
+            const isTyping = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT');
+
+            // ئەگەر بەکارهێنەر لەناو بۆشایی نووسیندا بوو و دوگمەی Backspace لێدا، ڕێگە مەدە مۆداڵەکە دابخرێت
+            if (event.key === 'Backspace' && isTyping) {
+                return; 
+            }
+
+            if (event.keyCode === 4 || event.keyCode === 27 || event.key === 'Backspace' || event.key === 'Escape') {
+                const adminModal = document.getElementById('adminModal');
+                if (adminModal && adminModal.style.display === 'block') {
+                    event.preventDefault();
+                    closeAdminModal();
+                    return;
+                }
+
+                const videoWrapper = document.getElementById('videoWrapper');
+                if (videoWrapper && videoWrapper.style.display === 'block') {
+                    event.preventDefault();
+                    stopVideoAndReturn();
+                }
+            }
+        });
+
+        function stopVideoAndReturn() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            }
+            
+            document.getElementById('appHeader').classList.remove('hidden-sidebar');
+            document.getElementById('mainTvContainer').classList.remove('hidden-sidebar');
+
+            const container = document.getElementById('playerContainer');
+            if (fluidInstance) { fluidInstance.destroy(); fluidInstance = null; } 
+            if (clapprInstance) { clapprInstance.destroy(); clapprInstance = null; }
+            container.innerHTML = "";
+            currentVideoUrl = "";
+            currentSubUrl = "";
+
+            document.getElementById('videoWrapper').style.display = 'none';
+            document.getElementById('adSlider').style.display = 'block';
+            document.getElementById('mainTvContainer').classList.remove('tv-layout-active');
+            
+            const firstCard = document.querySelector('.live-channel-row-card, .showcase-card');
+            if (firstCard) firstCard.focus();
+        }
+
+        function toggleFullscreen() {
+            const container = document.getElementById('playerContainer');
+            if (!document.fullscreenElement) {
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) { 
+                    container.webkitRequestFullscreen();
+                } else if (container.msRequestFullscreen) { 
+                    container.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        function toggleSidebarList() {
+            const header = document.getElementById('appHeader');
+            const mainContainer = document.getElementById('mainTvContainer');
+            
+            header.classList.toggle('hidden-sidebar');
+            mainContainer.classList.toggle('hidden-sidebar');
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            const dir = (lang === 'en') ? 'ltr' : 'rtl';
+            document.documentElement.setAttribute('dir', dir);
+            document.documentElement.setAttribute('lang', lang);
+
+            document.getElementById('homeBtn').innerText = t.home;
+            document.getElementById('categoryToggleBtn').innerText = t.categoryToggle;
+            document.getElementById('tvSearch').setAttribute('placeholder', t.searchPlaceholder);
+            document.getElementById('genre-all').innerText = t.liveGenreAll;
+            document.getElementById('adminTitle').innerText = t.adminTitle;
+            document.getElementById('labelAdminPass').innerText = t.adminPass;
+            document.getElementById('btnUpdatePass').innerText = t.updatePass;
+            document.getElementById('labelSubSettings').innerText = t.subSettings;
+            document.getElementById('labelSubFont').innerText = t.subFont;
+            document.getElementById('labelSubColor').innerText = t.subColor;
+            document.getElementById('labelSubSize').innerText = t.subSize;
+            document.getElementById('labelSubOffset').innerText = t.subOffset;
+            document.getElementById('btnSaveSubStyle').innerText = t.saveSubStyle;
+            document.getElementById('labelAds').innerText = t.ads;
+            document.getElementById('btnUpdateSlider').innerText = t.updateSlider;
+            document.getElementById('formActionLabel').innerText = t.addMedia;
+            document.getElementById('labelDragAndDrop').innerText = t.dragAndDrop;
+            document.getElementById('btnExitModal').innerText = t.exitModal;
+
+            document.getElementById('titleInput').setAttribute('placeholder', t.titleInput);
+            document.getElementById('posterInput').setAttribute('placeholder', t.posterInput);
+            document.getElementById('streamInput').setAttribute('placeholder', t.streamInput);
+            document.getElementById('subtitleInput').setAttribute('placeholder', t.subtitleInput);
+
+            document.querySelector('.btn-fullscreen-toggle').innerText = t.btnFullscreen;
+            document.getElementById('btnToggleSidebar').innerText = t.btnList;
+
+            if (editingIndex !== null) {
+                document.getElementById('submitFormBtn').innerText = t.updateBtn;
+            } else {
+                document.getElementById('submitFormBtn').innerText = t.saveBtn;
+            }
+            document.getElementById('cancelEditBtn').innerText = t.cancelBtn;
+
+            const align = (lang === 'en') ? 'left' : 'right';
+            document.querySelectorAll('input, select').forEach(el => {
+                el.style.textAlign = align;
+            });
+
+            renderScreen();
+        }
+
+        const cachedBg = localStorage.getItem('appBgColor');
+        if (cachedBg) {
+            applyAppThemeBg(cachedBg);
+        }
+
+        async function fetchFromCloud() {
+            try {
+                const res = await fetch(`${API_ENDPOINT}/latest`, { headers: { "X-Master-Key": API_KEY } });
+                const data = await res.json(); database = data.record;
+                applySubtitleGlobalStyles();
+                
+                const finalBg = database.appBg || "#12141c";
+                localStorage.setItem('appBgColor', finalBg);
+                applyAppThemeBg(finalBg);
+                
+                renderScreen();
+            } catch (e) { console.error(e); }
+        }
+
+        async function saveToCloud() {
+            try {
+                await fetch(API_ENDPOINT, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY }, body: JSON.stringify(database) });
+                renderScreen();
+            } catch (e) { console.error(e); }
+        }
+
+        function applyAppThemeBg(color) {
+            if (!color) color = "#12141c";
+            
+            const root = document.documentElement;
+            root.style.setProperty('--body-bg', color);
+            
+            const accentColor = themeAccents[color] || "#ff2a5f";
+            root.style.setProperty('--accent', accentColor);
+            
+            document.querySelectorAll('.matte-color-btn').forEach(btn => {
+                const btnColor = btn.getAttribute('data-color');
+                if (btnColor && btnColor.toLowerCase() === color.toLowerCase()) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function selectAppMatteColor(color, btn) {
+            database.appBg = color;
+            localStorage.setItem('appBgColor', color);
+            applyAppThemeBg(color);
+            saveToCloud();
+        }
+
+        function applySubtitleGlobalStyles() {
+            if(!database.subConfig) return;
+            const root = document.documentElement;
+            root.style.setProperty('--sub-font', database.subConfig.font);
+            root.style.setProperty('--sub-size-mobile', database.subConfig.sizeMobile || "18px");
+            root.style.setProperty('--sub-offset-mobile', database.subConfig.offsetMobile || "10%");
+            root.style.setProperty('--sub-color', database.subConfig.color || "#ffffff");
+            
+            document.getElementById('subFontSelect').value = database.subConfig.font;
+            document.getElementById('subColorSelect').value = database.subConfig.color || "#ffffff";
+            document.getElementById('sliderSize').value = parseInt(database.subConfig.sizeMobile) || 18;
+            document.getElementById('sliderOffset').value = parseInt(database.subConfig.offsetMobile) || 10;
+        }
+
+        function saveSubConfigToServer() {
+            const font = document.getElementById('subFontSelect').value;
+            const size = document.getElementById('sliderSize').value + "px";
+            const offset = document.getElementById('sliderOffset').value + "%";
+            const color = document.getElementById('subColorSelect').value;
+            
+            database.subConfig = {
+                font: font,
+                sizeMobile: size,
+                sizeDesktop: (parseInt(document.getElementById('sliderSize').value) + 10) + "px",
+                offsetMobile: offset,
+                offsetDesktop: "8%",
+                color: color
+            };
+            
+            applySubtitleGlobalStyles();
+            saveToCloud();
+            alert(currentLang === 'en' ? "Subtitle styles saved!" : currentLang === 'ar' ? "تم حفظ نمط الترجمة!" : "ستایلی ژێرنووس بە سەرکەوتوویی پاشەکەوت کرا!");
+        }
+
+        function renderScreen() { filterCategory(selectedCategory); initSlider(database.ad); }
+
+        function initSlider(adsDataString) {
+            const container = document.getElementById('adSlider'); container.innerHTML = ''; if(slideInterval) clearInterval(slideInterval);
+            let parts = adsDataString ? adsDataString.split('|') : []; let duration = parseInt(parts[5]) || 5; let adsArray = parts.slice(0, 5);
+            let hasValidImg = adsArray.some(url => url && url.trim() !== "");
+            if(!hasValidImg) { container.innerHTML = '<div class="slide active"><div class="slide-text">OneStore TV</div></div>'; return; }
+            let firstActiveSet = false;
+            adsArray.forEach((url) => {
+                if(url && url.trim() !== "") {
+                    const slide = document.createElement('div'); slide.className = `slide ${!firstActiveSet ? 'active' : ''}`; firstActiveSet = true;
+                    slide.innerHTML = `<img src="${url.trim()}">`; container.appendChild(slide);
+                }
+            });
+            let currentSlide = 0; const slides = document.querySelectorAll('.slide');
+            if(slides.length > 1) {
+                slideInterval = setInterval(() => {
+                    if (slides[currentSlide]) slides[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    if (slides[currentSlide]) slides[currentSlide].classList.add('active');
+                }, duration * 1000);
+            }
+        }
+
+        function toggleCategoryDropdown() { document.getElementById('categoryDropdown').classList.toggle('show'); }
+        
+        function selectCategoryDropdown(cat) { 
+            document.getElementById('categoryDropdown').classList.remove('show'); 
+            filterCategory(cat); 
+        }
+
+        function filterCategory(cat) {
+            selectedCategory = cat; 
+            
+            document.querySelectorAll('.dropdown-item-btn').forEach(b => b.classList.remove('active'));
+            const t = document.getElementById(`tab-${cat}`); if(t) t.classList.add('active');
+
+            document.querySelectorAll('.landscape-tab-btn').forEach(b => b.classList.remove('active'));
+            if(cat === 'live') {
+                const landLive = document.getElementById('land-live-btn');
+                if(landLive) landLive.classList.add('active');
+            } else {
+                const landMovies = document.getElementById('land-movies-btn');
+                if(landMovies) landMovies.classList.add('active');
+            }
+            
+            const genreBar = document.getElementById('liveGenresBar');
+            genreBar.style.display = (cat === 'live' && window.innerHeight > 500) ? 'flex' : 'none';
+
+            let filtered = database.movies.filter(m => m.category === cat);
+            if(cat === 'live' && selectedLiveGenre !== 'all') { filtered = filtered.filter(m => m.genre === selectedLiveGenre); }
+            displayMovies(filtered);
+        }
+
+        function filterLiveGenre(genre) {
+            selectedLiveGenre = genre;
+            document.querySelectorAll('.genre-tag-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            filterCategory('live');
+        }
+
+        function toggleGenreInput() { document.getElementById('liveGenreSelectWrapper').style.display = (document.getElementById('categoryInput').value === 'live') ? 'block' : 'none'; }
+
+        function displayMovies(list) {
+            const grid = document.getElementById('moviesGrid'); grid.innerHTML = '';
+            const t = translations[currentLang];
+            if(!list || list.length === 0) { grid.innerHTML = `<div style='text-align:center;color:#64748b;padding:20px;width:100%;grid-column:1/-1;'>${t.noMedia}</div>`; return; }
+            
+            if (selectedCategory === 'live') {
+                grid.className = 'live-channels-container';
+                list.forEach(m => {
+                    const card = document.createElement('div'); card.className = 'live-channel-row-card'; card.tabIndex = 0;
+                    card.onclick = () => { currentVideoUrl = m.url; currentSubUrl = m.sub || ""; detectAndPlay(); };
+                    card.innerHTML = `<div class="live-channel-left-content"><div class="live-channel-logo-wrapper"><img src="${m.img || 'https://via.placeholder.com/100x100'}"></div><div class="live-channel-row-title">${m.title}</div></div><div class="live-channel-tv-indicator">LIVE</div>`;
+                    grid.appendChild(card);
+                });
+            } else {
+                grid.className = 'grid-container';
+                list.forEach(m => {
+                    const card = document.createElement('div'); card.className = 'showcase-card';
+                    card.onclick = () => { currentVideoUrl = m.url; currentSubUrl = m.sub || ""; detectAndPlay(); };
+                    card.innerHTML = `<img src="${m.img || 'https://via.placeholder.com/200x300'}"><div class="card-meta"><div class="card-title">${m.title}</div></div>`;
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        function detectAndPlay() {
+            currentPlayerType = (currentVideoUrl.includes('iframe') || currentVideoUrl.includes('embed') || !currentVideoUrl.match(/\.(m3u8|mp4|mkv)$/i)) ? "iframe" : "clappr";
+            startPlayback();
+        }
+
+        async function loadSubtitlesDirectly(videoElement, subUrl) {
+            if (!subUrl || subUrl.trim() === "") return;
+            try {
+                const response = await fetch(subUrl); 
+                let text = await response.text();
+                if (!text.includes("WEBVTT")) {
+                    text = "WEBVTT\n\n" + text.replace(/\r\n/g, '\n').replace(/(\d{2}):(\d{2}):(\d{2}),(\d{3})/g, '$1:$2:$3.$4');
+                }
+                const track = document.createElement('track'); 
+                track.kind = "subtitles"; 
+                track.label = "Kurdish"; 
+                track.srclang = "ku";
+                track.src = URL.createObjectURL(new Blob([text], { type: 'text/vtt' })); 
+                track.default = true; 
+                videoElement.appendChild(track);
+                videoElement.textTracks[0].mode = 'showing';
+            } catch (error) {
+                const track = document.createElement('track'); 
+                track.kind = "subtitles"; 
+                track.label = "Kurdish"; 
+                track.srclang = "ku"; 
+                track.src = subUrl; 
+                track.default = true; 
+                videoElement.appendChild(track);
+                videoElement.textTracks[0].mode = 'showing';
+            }
+        }
+
+        function startPlayback() {
+            document.getElementById('videoWrapper').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('adSlider').style.display = 'none';
+
+            const container = document.getElementById('playerContainer');
+            document.getElementById('mainTvContainer').classList.add('tv-layout-active');
+
+            if (fluidInstance) { fluidInstance.destroy(); fluidInstance = null; } 
+            if (clapprInstance) { clapprInstance.destroy(); clapprInstance = null; }
+            container.innerHTML = "";
+            
+            document.querySelectorAll('.switch-btn').forEach(b => {
+                if(!b.classList.contains('btn-fullscreen-toggle') && !b.classList.contains('btn-list-toggle')) {
+                    b.classList.remove('active');
+                }
+            });
+            
+            const targetBtn = document.getElementById(`btn-${currentPlayerType}`);
+            if (targetBtn) targetBtn.classList.add('active');
+
+            if (currentPlayerType === "clappr") {
+                container.innerHTML = '<div id="clapprVid"></div>';
+                
+                clapprInstance = new Clappr.Player({ 
+                    source: currentVideoUrl, 
+                    parentId: "#clapprVid", 
+                    autoPlay: true, 
+                    width: '100%', 
+                    height: '100%', 
+                    playback: { playInline: true, recycleVideo: true, triggerUsePlay: true }
+                });
+
+                setTimeout(() => {
+                    const videoTag = container.querySelector('video');
+                    if (videoTag && currentSubUrl) {
+                        videoTag.setAttribute('crossorigin', 'anonymous');
+                        loadSubtitlesDirectly(videoTag, currentSubUrl);
+                    }
+                }, 1000);
+
+            } else if (currentPlayerType === "fluid") {
+                container.innerHTML = `<video id="fluidVid" controls autoplay crossorigin="anonymous"></video>`;
+                const vidEl = document.getElementById('fluidVid');
+                loadSubtitlesDirectly(vidEl, currentSubUrl);
+                
+                fluidInstance = fluidPlayer('fluidVid', { 
+                    layoutControls: { 
+                        fillToContainer: true, 
+                        autoPlay: true, 
+                        subtitlesEnabled: true 
+                    } 
+                });
+
+            } else if (currentPlayerType === "native") {
+                container.innerHTML = `<video id="nativeVid" class="native-player" controls autoplay crossorigin="anonymous"><source src="${currentVideoUrl}" type="application/x-mpegURL"></video>`;
+                const vidEl = document.getElementById('nativeVid');
+                
+                if (typeof Hls !== 'undefined' && Hls.isSupported() && currentVideoUrl.includes('m3u8')) {
+                    const hls = new Hls();
+                    hls.loadSource(currentVideoUrl);
+                    hls.attachMedia(vidEl);
+                }
+                loadSubtitlesDirectly(vidEl, currentSubUrl);
+                
+            } else if (currentPlayerType === "iframe") {
+                container.innerHTML = `<iframe src="${currentVideoUrl}" class="iframe-player" allowfullscreen allow="autoplay"></iframe>`;
+            }
+        }
+
+        function switchPlayer(type) { currentPlayerType = type; if (currentVideoUrl) startPlayback(); }
+        setInterval(() => { document.getElementById('tvClock').innerText = new Date().toLocaleTimeString('en-US', {hour12:false}); }, 1000);
+
+        function triggerAdminAccess() {
+            counter++; clearTimeout(timer); timer = setTimeout(() => counter = 0, 2000);
+            if(counter === 5) {
+                counter = 0; const p = prompt(translations[currentLang].adminPrompt);
+                if(p === database.password) { document.getElementById('adminModal').style.display = 'block'; buildManagerList(); }
+            }
+        }
+
+        function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; resetFormToInsert(); }
+        
+        document.getElementById('tvSearch').addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase(); let f = database.movies.filter(m => m.category === selectedCategory);
+            if(selectedCategory === 'live' && selectedLiveGenre !== 'all') f = f.filter(m => m.genre === selectedLiveGenre);
+            displayMovies(f.filter(m => m.title.toLowerCase().includes(q)));
+        });
+
+        function insertMovieToServer() {
+            const t = document.getElementById('titleInput').value.trim(); const p = document.getElementById('posterInput').value.trim(); const s = document.getElementById('streamInput').value.trim(); const sub = document.getElementById('subtitleInput').value.trim(); const c = document.getElementById('categoryInput').value; const g = document.getElementById('liveGenreInput').value;
+            if(t && p && s) {
+                if(editingIndex !== null) { database.movies[editingIndex] = {title: t, img: p, url: s, sub: sub, category: c, genre: g}; editingIndex = null; }
+                else { database.movies.push({title: t, img: p, url: s, sub: sub, category: c, genre: g}); }
+                saveToCloud(); resetFormToInsert(); buildManagerList();
+            }
+        }
+
+        function editMovieData(idx) {
+            editingIndex = idx; const tm = database.movies[idx];
+            document.getElementById('titleInput').value = tm.title; document.getElementById('posterInput').value = tm.img; document.getElementById('streamInput').value = tm.url; document.getElementById('subtitleInput').value = tm.sub || ""; document.getElementById('categoryInput').value = tm.category; document.getElementById('liveGenreInput').value = tm.genre || 'all';
+            toggleGenreInput(); document.getElementById('formActionLabel').innerText = translations[currentLang].updateBtn; document.getElementById('submitFormBtn').innerText = translations[currentLang].updateBtn; document.getElementById('cancelEditBtn').style.display = "block";
+        }
+
+        function resetFormToInsert() {
+            editingIndex = null; document.getElementById('titleInput').value = ''; document.getElementById('posterInput').value = ''; document.getElementById('streamInput').value = ''; document.getElementById('subtitleInput').value = '';
+            document.getElementById('formActionLabel').innerText = translations[currentLang].addMedia; document.getElementById('submitFormBtn').innerText = translations[currentLang].saveBtn; document.getElementById('cancelEditBtn').style.display = "none";
+        }
+
+        function buildManagerList() {
+            const container = document.getElementById('managerList'); container.innerHTML = '';
+            database.movies.forEach((m, idx) => {
+                const row = document.createElement('div'); row.className = 'manager-row';
+                
+                row.innerHTML = `
+                    <div class="manager-left-actions">
+                        <button class="edit-btn" onclick="editMovieData(${idx})">Edit</button>
+                        <button class="del-btn" onclick="removeMovie(${idx})">Del</button>
+                    </div>
+                    <div class="manager-center-info">
+                        <span class="manager-title">${m.title}</span>
+                        <span class="manager-subtitle">[${m.category.toUpperCase()}] ${m.genre ? m.genre.toUpperCase() : ''}</span>
+                    </div>
+                    <div class="manager-right-arrows">
+                        <button class="arrow-btn" onclick="moveItem(${idx}, -1)">▲</button>
+                        <button class="arrow-btn" onclick="moveItem(${idx}, 1)">▼</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function moveItem(index, direction) {
+            const targetIndex = index + direction;
+            if (targetIndex >= 0 && targetIndex < database.movies.length) {
+                const temp = database.movies[index];
+                database.movies[index] = database.movies[targetIndex];
+                database.movies[targetIndex] = temp;
+                
+                saveToCloud();
+                buildManagerList();
+            }
+        }
+
+        function removeMovie(idx) { if(confirm(currentLang === 'en' ? "Are you sure?" : currentLang === 'ar' ? "هل أنت متأكد؟" : "دڵنیایت لە سڕینەوەی؟")) { database.movies.splice(idx, 1); saveToCloud(); buildManagerList(); } }
+        
+        const scriptHls = document.createElement('script');
+        scriptHls.src = "https://cdn.jsdelivr.net/npm/hls.js@latest";
+        document.head.appendChild(scriptHls);
+
+        fetchFromCloud();
+    </script>
+</body>
+</html>
